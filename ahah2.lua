@@ -136,7 +136,7 @@ end
 local GUI = {
     AbrirMenu = imgui.new.bool(false),
     IgnoreAmigosTxt = ffi.new("char[?]", 50, "Em Breve"),
-    IgnoreSkin = new.int(217),
+    IgnoreSkinID = new.int(217),
     AtivarAimbot = new.bool(false),
     AtivarDraFov = new.bool(config.ConfigHexDump.AtivarDraFov),
     AntHs = new.bool(false),
@@ -405,7 +405,7 @@ imgui.OnFrame(function() return GUI.AbrirMenu[0] end, function()
                     end
                 end
                 imgui.Dummy(imgui.ImVec2(0, 15 * DPI))
-                imgui.InputInt("IGNORE SKIN ID", GUI.IgnoreSkin)
+                imgui.InputInt("IGNORE SKIN ID", GUI.IgnoreSkinID)
                 imgui.Dummy(imgui.ImVec2(0, 15 * DPI))
                 if imgui.Checkbox(" CABECA", GUI.Cabeca) then
                     GUI.Peito[0] = false
