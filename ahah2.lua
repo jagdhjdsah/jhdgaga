@@ -139,6 +139,7 @@ local GUI = {
     AtivarDraFov = new.bool(config.ConfigHexDump.AtivarDraFov),
     AntHs = new.bool(false),
     GodMod = new.bool(false),
+    AntTraze = new.bool(false),
     FovAimbot = new.float(100),
     SuavidadeAimbot = new.int(100),
     DistanciaAimbot = new.float(100),
@@ -302,6 +303,11 @@ imgui.OnFrame(function() return GUI.AbrirMenu[0] end, function()
                 Som1()
                 MostrarNotificacao("GOD MOD LEGIT", GUI.GodMod[0])
             end
+            imgui.Dummy(imgui.ImVec2(0, 10 * DPI))
+            if imgui.Checkbox(" ANT TRAZER", GUI.AntTraze) then
+                Som1()
+                MostrarNotificacao("ANT TRAZER", GUI.AntTraze[0])
+            end
             imgui.Dummy(imgui.ImVec2(0, 25 * DPI))
             imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(0.8, 0.0, 0.0, 1.0))
             imgui.PushStyleColor(imgui.Col.ButtonHovered, imgui.ImVec4(1.0, 0.0, 0.0, 1.0))
@@ -320,6 +326,9 @@ imgui.OnFrame(function() return GUI.AbrirMenu[0] end, function()
                 setPlayerControl(PLAYER_HANDLE, true)
                 restoreCameraJumpcut()
                 clearCharTasksImmediately(PLAYER_PED)
+            end
+            if imgui.Button(" SUICIDAR", BotaoMob) then
+                setCharHealth(PLAYER_PED, 0)
             end
             imgui.PopStyleColor(3)
             imgui.Dummy(imgui.ImVec2(0, 25 * DPI))
@@ -447,6 +456,17 @@ imgui.OnFrame(function() return GUI.AbrirMenu[0] end, function()
                     MostrarNotificacao("IGNORE SKIN (EM BREVE)", GUI.IgnoreSkin[0])
                     SalvarConfig()
                 end
+                imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(0.8, 0.0, 0.0, 1.0))
+                imgui.PushStyleColor(imgui.Col.ButtonHovered, imgui.ImVec4(1.0, 0.0, 0.0, 1.0))
+                imgui.PushStyleColor(imgui.Col.ButtonActive, imgui.ImVec4(0.6, 0.0, 0.0, 1.0))
+                if imgui.Button(" ADICIONA AMIGO", BotaoMob) then
+                    Som1()
+                end
+                imgui.SameLine()
+                if imgui.Button(" REMOVER AMIGO", BotaoMob) then
+                    Som1()
+                end
+                imgui.PopStyleColor(3)
                 imgui.Dummy(imgui.ImVec2(0, 30 * DPI))
             end
             if Toggle(" ATIVAR PUXAR E MATA JOGADORES", GUI.ProAimbot) then
@@ -546,6 +566,11 @@ imgui.OnFrame(function() return GUI.AbrirMenu[0] end, function()
                 for i = 1, 15 do
 					sampAddChatMessage("", -1)
 				end
+            end
+            if imgui.Button(" RECONECTAR", BotaoMob) then
+                local ip, port = sampGetCurrentServerAddress()
+                sampDisconnectWithReason(false)
+                sampConnectToServer(ip, port)
             end
             imgui.PopStyleColor(3)
         end
@@ -723,6 +748,14 @@ end
 function se.onSetPlayerHealth() -- ANT HS
     if GUI.AntHs[0] then
         return false
+    end
+end
+
+function se.onSetPlayerPos()
+    if GUI.AntTraze[0] then -- ANT TRAZER
+        return false
+    elseif GUI.AntTraze[0] == false then
+        return true
     end
 end
 
