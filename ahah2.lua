@@ -136,6 +136,7 @@ end
 local GUI = {
     AbrirMenu = imgui.new.bool(false),
     IgnoreAmigosTxt = ffi.new("char[?]", 50, "Em Breve"),
+    IgnoreSkin = new.int(217),
     AtivarAimbot = new.bool(false),
     AtivarDraFov = new.bool(config.ConfigHexDump.AtivarDraFov),
     AntHs = new.bool(false),
@@ -404,6 +405,8 @@ imgui.OnFrame(function() return GUI.AbrirMenu[0] end, function()
                     end
                 end
                 imgui.Dummy(imgui.ImVec2(0, 15 * DPI))
+                imgui.InputInt("IGNORE SKIN ID", GUI.IgnoreSkin)
+                imgui.Dummy(imgui.ImVec2(0, 15 * DPI))
                 if imgui.Checkbox(" CABECA", GUI.Cabeca) then
                     GUI.Peito[0] = false
                     GUI.AlturaY[0] = 0.4381
@@ -478,10 +481,11 @@ imgui.OnFrame(function() return GUI.AbrirMenu[0] end, function()
                 Som1()
                 MostrarNotificacao("PUXAR E MATA", GUI.ProAimbot[0])
             end
+            imgui.Dummy(imgui.ImVec2(0, 10 * DPI))
             if GUI.ProAimbot[0] then
-                imgui.Dummy(imgui.ImVec2(0, 5 * DPI))
                 imgui.InputInt(" ID DO JOGADOR ", GUI.ProAimbotId)
             end
+            imgui.Dummy(imgui.ImVec2(0, 5 * DPI))
         end
         if GUI.selected_category == "visual" then
             imgui.Dummy(imgui.ImVec2(0, 5 * DPI))
