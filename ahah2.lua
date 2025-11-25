@@ -135,6 +135,7 @@ end
 
 local GUI = {
     AbrirMenu = imgui.new.bool(false),
+    IgnoreAmigosTxt = ffi.new("char[?]", 50, "Em Breve"),
     AtivarAimbot = new.bool(false),
     AtivarDraFov = new.bool(config.ConfigHexDump.AtivarDraFov),
     AntHs = new.bool(false),
@@ -456,6 +457,10 @@ imgui.OnFrame(function() return GUI.AbrirMenu[0] end, function()
                     MostrarNotificacao("IGNORE SKIN (EM BREVE)", GUI.IgnoreSkin[0])
                     SalvarConfig()
                 end
+                imgui.Dummy(imgui.ImVec2(0, 15 * DPI))
+                imgui.Text("NOME DO AMIGO")
+                imgui.SameLine()
+                imgui.InputText("##IGNAMG", GUI.IgnoreAmigosTxt, 50)
                 imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(0.8, 0.0, 0.0, 1.0))
                 imgui.PushStyleColor(imgui.Col.ButtonHovered, imgui.ImVec4(1.0, 0.0, 0.0, 1.0))
                 imgui.PushStyleColor(imgui.Col.ButtonActive, imgui.ImVec4(0.6, 0.0, 0.0, 1.0))
@@ -566,11 +571,6 @@ imgui.OnFrame(function() return GUI.AbrirMenu[0] end, function()
                 for i = 1, 15 do
 					sampAddChatMessage("", -1)
 				end
-            end
-            if imgui.Button(" RECONECTAR", BotaoMob) then
-                local ip, port = sampGetCurrentServerAddress()
-                sampDisconnectWithReason(false)
-                sampConnectToServer(ip, port)
             end
             imgui.PopStyleColor(3)
         end
