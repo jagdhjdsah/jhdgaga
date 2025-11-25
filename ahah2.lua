@@ -443,9 +443,9 @@ imgui.OnFrame(function() return GUI.AbrirMenu[0] end, function()
                     SalvarConfig()
                 end
                 imgui.SameLine(400)
-                if imgui.Checkbox(" IGNORE AMIGOS (EM BREVE)", GUI.IgnoreAmigos) then
+                if imgui.Checkbox(" IGNORE SKIN", GUI.IgnoreSkin) then
                     Som1()
-                    MostrarNotificacao("IGNORE AMIGOS (EM BREVE)", GUI.IgnoreAmigos[0])
+                    MostrarNotificacao("IGNORE SKIN", GUI.IgnoreSkin[0])
                     SalvarConfig()
                 end
                 imgui.Dummy(imgui.ImVec2(0, 15 * DPI))
@@ -455,9 +455,9 @@ imgui.OnFrame(function() return GUI.AbrirMenu[0] end, function()
                     SalvarConfig()
                 end
                 imgui.SameLine(400)
-                if imgui.Checkbox(" IGNORE SKIN (EM BREVE)", GUI.IgnoreSkin) then
+                if imgui.Checkbox(" IGNORE AMIGOS (EM BREVE)", GUI.IgnoreAmigos) then
                     Som1()
-                    MostrarNotificacao("IGNORE SKIN (EM BREVE)", GUI.IgnoreSkin[0])
+                    MostrarNotificacao("IGNORE AMIGOS (EM BREVE)", GUI.IgnoreAmigos[0])
                     SalvarConfig()
                 end
                 imgui.Dummy(imgui.ImVec2(0, 15 * DPI))
@@ -734,19 +734,26 @@ function DrawCirculo(x, y, radius, color)
     end
 end
 
-function isPlayerArmed() -- IGNORE SOCO ATE ARMA 16
-    local weapon = getCurrentCharWeapon(PLAYER_PED)
-    return weapon > 0 and weapon ~= 16
+function isPlayerSkin(char) -- IGNORE SKIN
+    if not GUI.IgnoreSkin[0] then
+        return false
+    end
+    local skinIgnore = GUI.IgnoreSkinID[0]
+    local skinId = getCharModel(char)
+    return skinId == skinIgnore
+end
+
+function isPlayerAdmin(char) -- IGNORE ADMIN
+    if not GUI.IgnoreAdmin[0] then
+        return false
+    end
+    local skinId = getCharModel(char)
+    return skinId == 217 or skinId == 211
 end
 
 function IgnoreDrawFovArma() -- IGNORE ARMA SNIPER
     local weapon = getCurrentCharWeapon(PLAYER_PED)
     return weapon == 34
-end
-
-function isPlayerAdmin(ped)
-    local skinId = getCharModel(ped)
-    return skinId == 217 or skinId == 211
 end
 
 function se.onSetPlayerHealth() -- ANT HS
@@ -894,28 +901,35 @@ function Aimbot()
         
         local coordX, coordY, coordZ = getCharCoordinates(PLAYER_PED)
         local myPos = {coordX, coordY, coordZ}
-        
+
         for _, char in ipairs(getAllChars()) do
             if isCharOnScreen(char) and char ~= PLAYER_PED and not isCharDead(char) then
-                if not isPlayerAdmin(char) then
-                    local result, playerId = sampGetPlayerIdByCharHandle(char)
-                    if result and not isTargetAfkAim(playerId) and not isPlayerInVehicleAim(char) then
-                        local posicaoX, posicaoY, posicaoZ = obterPosicaoDoOsso(char, 5)
-                        local distanciaTotal = getDistanceBetweenCoords3d(coordX, coordY, coordZ, posicaoX, posicaoY, posicaoZ)
-                        if distanciaTotal < distanciaMaxima then
-                            local sx, sy = convert3DCoordsToScreen(posicaoX, posicaoY, posicaoZ)
-                            if sx and sy then
-                                local distFov = math.sqrt((sx - centroX)^2 + (sy - centroY)^2)
-                                if distFov <= maxFovRadius * 2.0 then
-                                    if not menorDistFov or distFov < menorDistFov then
-                                        menorDistFov = distFov
-                                        charProximo = char
-                                    end
+                if GUI.IgnoreAdmin[0] and isPlayerAdmin(char) then
+                    goto continue
+                end
+                
+                if GUI.IgnoreSkin[0] and isPlayerSkin(char) then
+                    goto continue
+                end
+                
+                local result, playerId = sampGetPlayerIdByCharHandle(char)
+                if result and not isTargetAfkAim(playerId) and not isPlayerInVehicleAim(char) then
+                    local posicaoX, posicaoY, posicaoZ = obterPosicaoDoOsso(char, 5)
+                    local distanciaTotal = getDistanceBetweenCoords3d(coordX, coordY, coordZ, posicaoX, posicaoY, posicaoZ)
+                    if distanciaTotal < distanciaMaxima then
+                        local sx, sy = convert3DCoordsToScreen(posicaoX, posicaoY, posicaoZ)
+                        if sx and sy then
+                            local distFov = math.sqrt((sx - centroX)^2 + (sy - centroY)^2)
+                            if distFov <= maxFovRadius * 2.0 then
+                                if not menorDistFov or distFov < menorDistFov then
+                                    menorDistFov = distFov
+                                    charProximo = char
                                 end
                             end
                         end
                     end
                 end
+                ::continue::
             end
         end
         
